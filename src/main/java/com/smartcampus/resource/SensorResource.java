@@ -1,5 +1,7 @@
 package com.smartcampus.resource;
 
+import com.smartcampus.exception.LinkedResourceNotFoundException;
+import com.smartcampus.model.Room;
 import com.smartcampus.model.Sensor;
 import com.smartcampus.store.DataStore;
 
@@ -47,10 +49,27 @@ public class SensorResource {
                     .entity("{\"error\":\"Sensor body is required\"}")
                     .build();
         }
+        // Validate that the referenced room actually exists before creating the sensor
+        String roomId = sensor.getRoomId();
+        if (roomId == null || roomId.isBlank()) {
+            throw new LinkedResourceNotFoundException(
+                    "Sensor.roomId is required and must reference an existing room.");
+        }
+        Room room = DataStore.rooms().get(roomId);
+        if (room == null) {
+            throw new LinkedResourceNotFoundException(
+                    "Referenced room '" + roomId + "' does not exist.");
+        }
+
         if (sensor.getId() == null || sensor.getId().isBlank()) {
             sensor.setId(UUID.randomUUID().toString());
         }
         DataStore.sensors().put(sensor.getId(), sensor);
+
+        // Keep the room's sensorIds list in sync
+        if (!room.getSensorIds().contains(sensor.getId())) {
+            room.getSensorIds().add(sensor.getId());
+        }
 
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path(sensor.getId())
