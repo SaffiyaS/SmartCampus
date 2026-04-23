@@ -7,6 +7,7 @@ import com.smartcampus.store.DataStore;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -38,7 +39,7 @@ public class RoomResource {
     public Room getRoom(@PathParam("roomId") String roomId) {
         Room room = DataStore.rooms().get(roomId);
         if (room == null) {
-            throw new javax.ws.rs.NotFoundException("Room not found: " + roomId);
+            throw new NotFoundException("Room not found: " + roomId);
         }
         return room;
     }
@@ -61,7 +62,7 @@ public class RoomResource {
     public Response deleteRoom(@PathParam("roomId") String roomId) {
         Room room = DataStore.rooms().get(roomId);
         if (room == null) {
-            throw new javax.ws.rs.NotFoundException("Room not found: " + roomId);
+            throw new NotFoundException("Room not found: " + roomId);
         }
         // Block deletion when the room still has any linked sensors
         if (room.getSensorIds() != null && !room.getSensorIds().isEmpty()) {
