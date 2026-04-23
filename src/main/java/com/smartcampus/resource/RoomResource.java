@@ -46,6 +46,11 @@ public class RoomResource {
 
     @POST
     public Response createRoom(Room room) {
+        if (room == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"Room body is required\"}")
+                    .build();
+        }
         if (room.getId() == null || room.getId().isBlank()) {
             room.setId(UUID.randomUUID().toString());
         }
