@@ -1,7 +1,9 @@
 package com.smartcampus.resource;
 
+import com.smartcampus.exception.SensorUnavailableException;
 import com.smartcampus.model.Sensor;
 import com.smartcampus.model.SensorReading;
+import com.smartcampus.model.SensorStatus;
 import com.smartcampus.store.DataStore;
 
 import javax.ws.rs.Consumes;
@@ -47,6 +49,12 @@ public class SensorReadingResource {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("{\"error\":\"SensorReading body is required\"}")
                     .build();
+        }
+        // Block new readings while the sensor is under maintenance
+        if (parentSensor.getStatus() == SensorStatus.MAINTENANCE) {
+            throw new SensorUnavailableException(
+                    "Sensor '" + parentSensor.getId()
+                            + "' is under MAINTENANCE and cannot accept new readings.");
         }
         if (reading.getId() == null || reading.getId().isBlank()) {
             reading.setId(UUID.randomUUID().toString());
