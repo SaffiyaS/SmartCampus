@@ -59,6 +59,10 @@ public class SensorReadingResource {
                 .computeIfAbsent(parentSensor.getId(), k -> new ArrayList<>())
                 .add(reading);
 
+        // Side effect: update the parent sensor's currentValue so the
+        // latest measurement is reflected on the sensor itself.
+        parentSensor.setCurrentValue(reading.getValue());
+
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path(reading.getId())
                 .build();
