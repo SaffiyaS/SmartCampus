@@ -3,6 +3,7 @@ package com.smartcampus.resource;
 import com.smartcampus.exception.LinkedResourceNotFoundException;
 import com.smartcampus.model.Room;
 import com.smartcampus.model.Sensor;
+import com.smartcampus.model.SensorStatus;
 import com.smartcampus.store.DataStore;
 
 import javax.ws.rs.Consumes;
@@ -75,6 +76,9 @@ public class SensorResource {
 
         if (sensor.getId() == null || sensor.getId().isBlank()) {
             sensor.setId(UUID.randomUUID().toString());
+        }
+        if (sensor.getStatus() == null) {
+            sensor.setStatus(SensorStatus.ACTIVE);
         }
         DataStore.sensors().put(sensor.getId(), sensor);
 
