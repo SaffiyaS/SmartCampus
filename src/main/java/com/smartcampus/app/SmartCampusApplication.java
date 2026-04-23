@@ -6,6 +6,7 @@ import com.smartcampus.mapper.NotFoundExceptionMapper;
 import com.smartcampus.mapper.RoomNotEmptyExceptionMapper;
 import com.smartcampus.mapper.SensorUnavailableExceptionMapper;
 import com.smartcampus.mapper.ThrowableExceptionMapper;
+import com.smartcampus.resource.DiscoveryResource;
 import com.smartcampus.resource.RoomResource;
 import com.smartcampus.resource.SensorResource;
 
@@ -22,6 +23,7 @@ public class SmartCampusApplication extends Application {
         Set<Class<?>> classes = new HashSet<>();
 
         // JAX-RS resources
+        classes.add(DiscoveryResource.class);
         classes.add(RoomResource.class);
         classes.add(SensorResource.class);
 
