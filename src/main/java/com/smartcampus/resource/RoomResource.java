@@ -5,19 +5,41 @@ import com.smartcampus.store.DataStore;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 @Path("/rooms")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RoomResource {
 
+    @Context
+    private UriInfo uriInfo;
+
     @GET
     public Collection<Room> listRooms() {
         return new ArrayList<>(DataStore.rooms().values());
+    }
+
+    @POST
+    public Response createRoom(Room room) {
+        if (room.getId() == null || room.getId().isBlank()) {
+            room.setId(UUID.randomUUID().toString());
+        }
+        DataStore.rooms().put(room.getId(), room);
+
+        URI location = uriInfo.getAbsolutePathBuilder()
+                .path(room.getId())
+                .build();
+        return Response.created(location).entity(room).build();
     }
 }
