@@ -23,6 +23,9 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
     @Override
     public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) throws IOException {
-        // Response logging implemented in the next commit
+        String method = requestContext.getMethod();
+        String uri = requestContext.getUriInfo().getRequestUri().toString();
+        int status = responseContext.getStatus();
+        LOGGER.info(() -> "<-- " + status + " " + method + " " + uri);
     }
 }
