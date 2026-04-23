@@ -55,6 +55,21 @@ public class SensorResource {
         return sensor;
     }
 
+    /**
+     * Sub-resource locator. Note: intentionally NO @GET/@POST here,
+     * only @Path — JAX-RS routes requests beneath this path to the
+     * returned SensorReadingResource instance, which owns its own HTTP
+     * method handlers.
+     */
+    @Path("{sensorId}/readings")
+    public SensorReadingResource readings(@PathParam("sensorId") String sensorId) {
+        Sensor sensor = DataStore.sensors().get(sensorId);
+        if (sensor == null) {
+            throw new NotFoundException("Sensor with id '" + sensorId + "' does not exist.");
+        }
+        return new SensorReadingResource(sensor);
+    }
+
     @POST
     public Response createSensor(Sensor sensor) {
         if (sensor == null) {
