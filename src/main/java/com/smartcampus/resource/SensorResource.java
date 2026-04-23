@@ -107,6 +107,7 @@ public class SensorResource {
             room.getSensorIds().add(sensor.getId());
         }
 
+        // Response.created(...) automatically sets the Location header
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path(sensor.getId())
                 .build();

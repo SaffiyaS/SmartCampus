@@ -76,6 +76,7 @@ public class SensorReadingResource {
         // latest measurement is reflected on the sensor itself.
         parentSensor.setCurrentValue(reading.getValue());
 
+        // Response.created(...) automatically sets the Location header
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path(reading.getId())
                 .build();

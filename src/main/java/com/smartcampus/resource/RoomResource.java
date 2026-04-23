@@ -56,6 +56,7 @@ public class RoomResource {
         }
         DataStore.rooms().put(room.getId(), room);
 
+        // Response.created(...) automatically sets the Location header
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path(room.getId())
                 .build();
