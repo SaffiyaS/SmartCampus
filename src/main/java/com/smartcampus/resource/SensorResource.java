@@ -56,10 +56,15 @@ public class SensorResource {
     }
 
     /**
-     * Sub-resource locator. Note: intentionally NO @GET/@POST here,
-     * only @Path — JAX-RS routes requests beneath this path to the
-     * returned SensorReadingResource instance, which owns its own HTTP
-     * method handlers.
+     * Sub-resource locator for readings under a specific sensor.
+     *
+     * IMPORTANT: this method intentionally carries NO @GET / @POST
+     * annotation. Only @Path is permitted on a sub-resource locator so
+     * that JAX-RS hands off the remaining path to the returned
+     * SensorReadingResource instance, whose own @GET / @POST methods
+     * handle the requests. The locator also wires the parent Sensor
+     * into the sub-resource so side effects (e.g. updating
+     * currentValue) can be applied cleanly.
      */
     @Path("{sensorId}/readings")
     public SensorReadingResource readings(@PathParam("sensorId") String sensorId) {
