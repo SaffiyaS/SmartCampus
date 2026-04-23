@@ -56,6 +56,11 @@ public class SensorReadingResource {
                     "Sensor '" + parentSensor.getId()
                             + "' is under MAINTENANCE and cannot accept new readings.");
         }
+        if (parentSensor.getStatus() == SensorStatus.OFFLINE) {
+            throw new SensorUnavailableException(
+                    "Sensor '" + parentSensor.getId()
+                            + "' is OFFLINE and cannot accept new readings.");
+        }
         if (reading.getId() == null || reading.getId().isBlank()) {
             reading.setId(UUID.randomUUID().toString());
         }
