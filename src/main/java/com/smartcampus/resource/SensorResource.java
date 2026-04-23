@@ -49,7 +49,7 @@ public class SensorResource {
     public Sensor getSensor(@PathParam("sensorId") String sensorId) {
         Sensor sensor = DataStore.sensors().get(sensorId);
         if (sensor == null) {
-            throw new NotFoundException("Sensor not found: " + sensorId);
+            throw new NotFoundException("Sensor with id '" + sensorId + "' does not exist.");
         }
         return sensor;
     }
