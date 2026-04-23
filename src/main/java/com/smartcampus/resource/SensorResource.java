@@ -7,8 +7,10 @@ import com.smartcampus.store.DataStore;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -40,6 +42,16 @@ public class SensorResource {
                 .filter(s -> type.equalsIgnoreCase(s.getType()))
                 .collect(Collectors.toList());
         return filtered;
+    }
+
+    @GET
+    @Path("/{sensorId}")
+    public Sensor getSensor(@PathParam("sensorId") String sensorId) {
+        Sensor sensor = DataStore.sensors().get(sensorId);
+        if (sensor == null) {
+            throw new NotFoundException("Sensor not found: " + sensorId);
+        }
+        return sensor;
     }
 
     @POST
