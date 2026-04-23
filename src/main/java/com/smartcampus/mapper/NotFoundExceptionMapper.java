@@ -13,12 +13,14 @@ public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundExceptio
 
     @Override
     public Response toResponse(NotFoundException exception) {
+        String message = exception.getMessage();
+        if (message == null || message.isBlank()) {
+            message = "The requested resource does not exist.";
+        }
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("status", 404);
         body.put("error", "Not Found");
-        body.put("message", exception.getMessage() == null
-                ? "The requested resource does not exist."
-                : exception.getMessage());
+        body.put("message", message);
         return Response.status(Response.Status.NOT_FOUND)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(body)
