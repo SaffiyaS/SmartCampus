@@ -10,23 +10,149 @@ sensor readings on a university campus. Packaged as a WAR and
 deployed on **Apache Tomcat 9**. Storage is purely in-memory
 (`ConcurrentHashMap`); there is no database.
 
-## Stack
+## Tech Stack
 
-- Java 11
-- JAX-RS via Jersey 2.41 (`javax.ws.rs.*`)
-- Jackson for JSON
-- Packaging: WAR
-- Servlet container: Tomcat 9.x
+| Layer | Technology |
+|---|---|
+| Language | Java 11 |
+| REST framework | JAX-RS via Jersey 2.41 (`javax.ws.rs.*`) |
+| JSON binding | Jackson |
+| Build tool | Apache Maven |
+| Packaging | WAR |
+| Servlet container | Apache Tomcat 9.x |
+| Storage | In-memory `ConcurrentHashMap` (no database) |
+| IDE used | Apache NetBeans |
+
+## Architecture
+
+The API is organised into clearly separated layers. Each layer has one
+job and only talks to the layer directly below or above it. This keeps
+the code easy to extend and matches REST best practice.
+
+```
+            HTTP request from client (browser / Postman / curl)
+                                  |
+                                  v
+                +---------------------------------+
+                |        Apache Tomcat 9          |   Servlet container,
+                |     (servlet container)         |   hosts the WAR.
+                +---------------------------------+
+                                  |
+                                  v
+                +---------------------------------+
+                |    Logging Filter (in)          |   Logs the incoming
+                |   ContainerRequestFilter        |   method + URI.
+                +---------------------------------+
+                                  |
+                                  v
+                +---------------------------------+
+                |      Jersey JAX-RS router       |   Matches URL + HTTP verb
+                |   @ApplicationPath("/api/v1")   |   to the right resource.
+                +---------------------------------+
+                                  |
+                                  v
+                +---------------------------------+
+                |        Resource layer           |   DiscoveryResource
+                |      (REST endpoints)           |   RoomResource
+                |                                 |   SensorResource
+                |                                 |   SensorReadingResource
+                +---------------------------------+
+                                  |
+                                  v
+                +---------------------------------+
+                |          Model layer            |   Room, Sensor,
+                |    (plain Java POJOs)           |   SensorReading,
+                |                                 |   SensorStatus
+                +---------------------------------+
+                                  |
+                                  v
+                +---------------------------------+
+                |     DataStore (singleton)       |   Static
+                |   in-memory ConcurrentHashMap   |   thread-safe maps.
+                +---------------------------------+
+
+   On any thrown exception:
+                +---------------------------------+
+                |        Exception Mappers        |   409 RoomNotEmpty
+                |   (turn exceptions into JSON)   |   422 LinkedResource...
+                |                                 |   403 SensorUnavailable
+                |                                 |   404 NotFound
+                |                                 |   500 Throwable (catch-all)
+                +---------------------------------+
+                                  |
+                                  v
+                +---------------------------------+
+                |   Logging Filter (out)          |   Logs the outgoing
+                |  ContainerResponseFilter        |   status code.
+                +---------------------------------+
+                                  |
+                                  v
+                          HTTP response (JSON)
+```
+
+## Prerequisites
+
+Before building or running the project, the following must be installed
+and on the system `PATH`:
+
+- **JDK 11 or higher** — verify with `java -version`
+- **Apache Maven 3.6+** — verify with `mvn -version`
+- **Apache Tomcat 9.x** — extracted somewhere convenient
+  (e.g. `C:\Tomcat\apache-tomcat-9.0.x` on Windows)
+- *(optional but recommended)* **Apache NetBeans 17+** with Tomcat
+  registered under *Services → Servers*
 
 ## Build & Deploy
 
+### Step 1 — Clone the repository
+
 ```bash
-mvn clean package
-# produces target/SmartCampusAPI.war
-# drop into <tomcat>/webapps/ deploy via NetBeans
+git clone https://github.com/SaffiyaS/SmartCampus.git
+cd SmartCampus
 ```
 
-Base URL once deployed: `http://localhost:8080/SmartCampusAPI/api/v1`
+### Step 2 — Build the WAR with Maven
+
+```bash
+mvn clean package
+```
+
+This compiles the project and produces `target/SmartCampusAPI.war`.
+
+### Step 3 — Deploy to Tomcat
+
+**Option A — Using NetBeans (recommended):**
+
+1. *File → Open Project* and select the `SmartCampus` folder.
+2. Right-click the project → *Clean and Build*.
+3. Right-click the project → *Run*. NetBeans deploys the WAR to the
+   registered Tomcat server and opens the browser automatically.
+
+**Option B — Manual deployment:**
+
+```bash
+# copy the WAR into Tomcat's webapps directory
+cp target/SmartCampusAPI.war <TOMCAT_HOME>/webapps/
+
+# start Tomcat
+<TOMCAT_HOME>/bin/startup.sh        # Linux / macOS
+<TOMCAT_HOME>\bin\startup.bat       # Windows
+```
+
+### Step 4 — Verify the deployment
+
+Once Tomcat reports the app is started, open:
+
+```
+http://localhost:8080/SmartCampusAPI/api/v1
+```
+
+You should receive the Discovery JSON document listing the available
+resource collections. The base URL for all endpoints is:
+
+```
+http://localhost:8080/SmartCampusAPI/api/v1
+```
 
 ## Project layout
 
