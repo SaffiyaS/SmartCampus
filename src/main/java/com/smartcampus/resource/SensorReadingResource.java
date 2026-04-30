@@ -26,9 +26,6 @@ public class SensorReadingResource {
 
     private final Sensor parentSensor;
 
-    @Context
-    private UriInfo uriInfo;
-
     public SensorReadingResource(Sensor parentSensor) {
         this.parentSensor = parentSensor;
     }
@@ -44,7 +41,7 @@ public class SensorReadingResource {
     }
 
     @POST
-    public Response addReading(SensorReading reading) {
+    public Response addReading(SensorReading reading, @Context UriInfo uriInfo) {
         if (reading == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("{\"error\":\"SensorReading body is required\"}")
