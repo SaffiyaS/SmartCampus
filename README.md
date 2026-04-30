@@ -3,7 +3,7 @@
 **Module:** 5COSC022W Client-Server Architectures (2025/26)
 **Student:** M.S.F.Saffiya
 **Student ID:** 20231715
-**GitHub:** _\<your repo URL>_
+**GitHub:** https://github.com/SaffiyaS/SmartCampus
 
 A JAX-RS (Jersey 2.41) RESTful API for managing rooms, sensors and
 sensor readings on a university campus. Packaged as a WAR and
@@ -23,7 +23,7 @@ deployed on **Apache Tomcat 9**. Storage is purely in-memory
 ```bash
 mvn clean package
 # produces target/SmartCampusAPI.war
-# drop into <tomcat>/webapps/ or deploy via NetBeans
+# drop into <tomcat>/webapps/ deploy via NetBeans
 ```
 
 Base URL once deployed: `http://localhost:8080/SmartCampusAPI/api/v1`
