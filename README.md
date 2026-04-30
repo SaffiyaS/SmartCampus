@@ -419,7 +419,7 @@ To stop any of this from leaking, I have a global `ThrowableExceptionMapper`. If
 ```java
 LOGGER.log(Level.SEVERE, "Unhandled exception caught by global mapper", exception);
 return Response.status(500)
-               .type(APPLICATION_JSON)
+               .type(MediaType.APPLICATION_JSON)
                .entity(Map.of("status", 500, "error", "Internal Server Error",
                               "message", "An unexpected error occurred. Please try again later."))
                .build();
